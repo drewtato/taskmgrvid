@@ -1,0 +1,11 @@
+{
+	"include": [
+		"src/**/*"
+	],
+	"compilerOptions": {
+		"target": "ES2017",
+		"outDir": "msc",
+		"sourceMap": true,
+		"noImplicitAny": true
+	}
+}
