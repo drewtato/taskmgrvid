@@ -1,0 +1,179 @@
+:root {
+	--cpu-accent: #117dbb;
+	--cpu-accent-light: #d9eaf4;
+	--cpu-accent-extralight: #f1f6fa;
+	
+	--window-background: #fff;
+	--window-background-secondary: #f0f0f0;
+	--window-text: #000;
+	--window-border-inactive: #4b4251;
+	--window-border: #5c5a58;
+	--window-accent: #4c4a48;
+	--window-hover: #5e5c5b;
+	--close-hover: #e81123;
+	
+	--divider: #d9d9d9;
+	--divider-light: #f2f2f2;
+	
+	--hover: #e5f3ff;
+	--hover-border: #cce8ff;
+	/*
+		These are the exact colors identified by GIMP to
+		match those in Windows, but they don't appear
+		the same in browser. While less correct, it will
+		be much easier to assume all colors are opaque.
+	*/
+	/* --hover: rgba(0, 191, 255, .217); */
+	/* --hover-border: rgba(0, 191, 255, .395); */
+	--active: #cce8ff;
+	--active-border: #99d1ff;
+	--tab-hover: #d8eaf9;
+	
+	--scale: calc(1 / 1.15);
+}
+
+body {
+	margin: 0;
+	background: #412f4d;
+	font-family: 'Segoe UI', 'Roboto', sans-serif;
+	color: rgb(226, 226, 226);
+	font-size: calc(14px * var(--scale));
+}
+* {
+	box-sizing: border-box;
+}
+
+.window {
+	background: var(--window-background);
+	color: var(--window-text);
+	margin: 10px;
+	display: grid;
+	grid-template: "title" "menu" "content" 1fr "footer";
+	height: calc(880px * var(--scale));
+	width: calc(900px * var(--scale));
+	border: calc(1px * var(--scale)) solid var(--window-border);
+	
+	user-select: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+}
+
+.window div {
+	display: grid;
+	grid-auto-flow: column;
+}
+.window .monitorContent, 
+.window .tabContainer, 
+.window .sideTabContainer {
+	grid-auto-flow: row;
+}
+
+.titleBar {
+	grid-area: title;
+	grid-template-columns: 1fr auto;
+	background: var(--window-accent);
+	height: calc(34px * var(--scale));
+	color: #fff;
+}
+.inactive .titleBar {
+	background: none;
+	color: var(--window-text);
+}
+.titleContents {
+	padding: calc(7px * var(--scale)) calc(9px * var(--scale));
+	grid-template-columns: auto 1fr;
+}
+.titleContents > div {
+	padding-left: calc(5px * var(--scale));
+}
+.windowControls {
+	align-content: stretch;
+	column-gap: calc(1px * var(--scale));
+}
+.windowControls > div {
+	height: calc(33px * var(--scale));
+	width: calc(50px * var(--scale));
+	align-content: center;
+	justify-items: center;
+}
+.windowControls > div > svg {
+	height: calc(12px * var(--scale));
+	width: calc(12px * var(--scale));
+	stroke: currentColor;
+	stroke-width: calc(1px * var(--scale));
+	fill: transparent;
+	transition: 200ms background;
+}
+.windowControls > div:hover {
+	background: var(--window-hover);
+}
+.windowControls > div:last-child:hover {
+	background: var(--close-hover);
+}
+
+.menuBar {
+	grid-area: menu;
+	justify-content: start;
+	border-bottom: calc(2px * var(--scale)) solid var(--divider-light);
+}
+.menuBar > div {
+	margin: 0 calc(-1px * var(--scale)) calc(-1px * var(--scale)) 0;
+	border: calc(1px * var(--scale)) solid transparent;
+	padding: 0 calc(7px * var(--scale)) calc(1px * var(--scale)) calc(6px * var(--scale));
+}
+.menuBar > div:hover {
+	background: var(--hover);
+	border-color: var(--hover-border);
+}
+.menuBar > div:active {
+	background: var(--active);
+	border-color: var(--active-border);
+}
+
+.tabContainer {
+	grid-area: content;
+	justify-content: stretch;
+	grid-template-rows: auto 1fr;
+}
+.tabBar {
+	border-bottom: calc(1px * var(--scale)) solid var(--divider);
+	justify-content: start;
+	padding: calc(2px * var(--scale)) calc(2px * var(--scale)) 0;
+}
+.tabBar > div {
+	padding: calc(2px * var(--scale)) calc(5px * var(--scale));
+	border: calc(1px * var(--scale)) solid var(--divider);
+	margin: calc(2px * var(--scale)) calc(-1px * var(--scale)) calc(-1px * var(--scale)) 0;
+	background: var(--window-background-secondary);
+}
+
+.tabBar > div.active {
+	margin-top: 0;
+	padding: calc(2px * var(--scale)) calc(7px * var(--scale));
+	background: var(--window-background);
+	border-bottom-width: 0;
+}
+.tabBar > div:not(.active):hover {
+	background: var(--tab-hover);
+}
+
+.monitorContent {
+	grid-template-rows: auto auto 1fr auto;
+}
+
+.footerBar {
+	grid-area: footer;
+}
+.footerBar > div {
+	display: block;
+}
+
+.icon {
+	height: calc(18px * var(--scale));
+	width: calc(18px * var(--scale));
+}
+
+.keybind {
+	text-decoration: underline;
+}

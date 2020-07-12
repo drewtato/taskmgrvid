@@ -1,5 +1,5 @@
-const width = 32;
-const height = 32;
+const width = 6;
+const height = 6;
 window.addEventListener('load', () => {
     let [source, intermediate, scale] = setup(width, height);
     source.addEventListener('play', () => {

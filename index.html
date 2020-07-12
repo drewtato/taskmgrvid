@@ -1,127 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Task Manager Video</title>
-	<link rel="stylesheet" href="msc/waterfall.css">
-	<script src="msc/beepboop.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager Video</title>
+    <link rel="stylesheet" href="msc/waterfall.css">
+    <script src="msc/beepboop.js"></script>
 </head>
+
 <body>
-	<div class="window" id="taskManager">
-		<div class="titleBar">
-			<img src="msc/taskmgr_icon.png" alt="task manager icon" class="icon">
-			<div>Task Manager</div>
-			<div class="windowControls">
-				<div class="minimize"></div>
-				<div class="maximize"></div>
-				<div class="close"></div>
-			</div>
-		</div>
-		<div class="menuBar">
-			<div>File</div>
-			<div>Options</div>
-			<div>View</div>
-		</div>
-		<div class="tabContainer">
-			<div class="tabBar">
-				<div class="tab">Processes</div>
-				<div class="tab active">Performance</div>
-				<div class="tab">App history</div>
-				<div class="tab">Startup</div>
-				<div class="tab">Users</div>
-				<div class="tab">Details</div>
-				<div class="tab">Services</div>
-			</div>
-			<div class="mainContent">
-				<div class="sideTabContainer">
-					<!-- Todo -->
-				</div>
-				<div class="separator"></div>
-				<div class="monitorContent">
-					<div class="titleArea">
-						<div class="title left">CPU</div>
-						<div class="name right">AMD Ryzen Threadripper 3990X 64-Core Processor</div>
-					</div>
-					<div class="subtitleArea">
-						<div class="left">% Utilization over 4 minutes</div>
-						<div class="right">100%</div>
-					</div>
-					<div class="graphs">
-						<pre id="cores"></pre>
-					</div>
-					<div class="details">
-						<ul class="primaryDetails">
-							<li>
-								<div class="title">Utilization</div>
-								<div class="value">27%</div>
-							</li>
-							<li>
-								<div class="title">Speed</div>
-								<div class="value">5.00 GHz</div>
-							</li>
-							<li>
-								<div class="title">Processes</div>
-								<div class="value">5128</div>
-							</li>
-							<li>
-								<div class="title">Threads</div>
-								<div class="value">89917</div>
-							</li>
-							<li>
-								<div class="title">Handles</div>
-								<div class="value">647402</div>
-							</li>
-							<li>
-								<div class="title">Up time</div>
-								<div class="value">21:30:26:05</div>
-							</li>
-						</ul>
-						<ul class="secondaryDetails">
-							<li>
-								<div class="title">Base speed</div>
-								<div class="value">2.9 GHz</div>
-							</li>
-							<li>
-								<div class="title">Sockets</div>
-								<div class="value">2</div>
-							</li>
-							<li>
-								<div class="title">Cores</div>
-								<div class="value">64</div>
-							</li>
-							<li>
-								<div class="title">Logical processors</div>
-								<div class="value">128</div>
-							</li>
-							<li>
-								<div class="title">Virtualization</div>
-								<div class="value">Enabled</div>
-							</li>
-							<li>
-								<div class="title">L1 cache</div>
-								<div class="value">4 MB</div>
-							</li>
-							<li>
-								<div class="title">L2 cache</div>
-								<div class="value">32 MB</div>
-							</li>
-							<li>
-								<div class="title">L3 cache</div>
-								<div class="value">256 MB</div>
-							</li>
-						</ul>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="footerBar">
-			<div>Fewer <span class="keybind">d</span>etails</div>
-			<div class="separator"></div>
-			<div>Open Resource Monitor</div>
-		</div>
-	</div>
-	<video id="source" src="msc/bad_apple.webm" muted controls></video>
-	<canvas id="intermediate"></canvas>
+    <div class="window" id="taskManager">
+        <div class="titleBar">
+            <div class="titleContents">
+                <img src="msc/taskmgr_icon_32bit.ico" alt="task manager icon" class="icon">
+                <div>Task Manager</div>
+            </div>
+            <div class="windowControls">
+                <div class="minimize">
+					<svg xmlns="http://www.w3.org/2000/svg">
+                        <line x1="0" y1="5.6" x2="8.5" y2="5.6" />
+                    </svg>
+                </div>
+                <div class="maximize">
+                    <svg xmlns="http://www.w3.org/2000/svg">
+                        <rect x="0.4" y="1.3" width="7.8" height="7.8" />
+                    </svg>
+                </div>
+                <div class="close">
+                    <svg xmlns="http://www.w3.org/2000/svg">
+                        <line x1="1" y1="1" x2="9.5" y2="9.5" />
+                        <line x1="1" y1="9.5" x2="9.5" y2="1" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+        <div class="menuBar">
+            <div><span class="keybind">F</span>ile</div>
+            <div><span class="keybind">O</span>ptions</div>
+            <div><span class="keybind">V</span>iew</div>
+        </div>
+        <div class="tabContainer">
+            <div class="tabBar">
+                <div>Processes</div>
+                <div class="active">Performance</div>
+                <div>App history</div>
+                <div>Startup</div>
+                <div>Users</div>
+                <div>Details</div>
+                <div>Services</div>
+            </div>
+            <div class="mainContent">
+                <div class="sideTabContainer">
+                    <!-- Todo -->
+                </div>
+                <div class="separator"></div>
+                <div class="monitorContent">
+                    <div class="titleArea">
+                        <div class="title left">CPU</div>
+                        <div class="name right">AMD Ryzen Threadripper 3990X 64-Core Processor</div>
+                    </div>
+                    <div class="subtitleArea">
+                        <div class="left">% Utilization over 4 minutes</div>
+                        <div class="right">100%</div>
+                    </div>
+                    <div class="graphs">
+                        <pre id="cores">
+   0   0   0   0   0   0
+   
+   0   0   0   0   0   0
+   
+   0   0   0   0   0   0
+   
+   0   0   0   0   0   0
+   
+   0   0   0   0   0   0
+   
+   0   0   0   0   0   0
+						</pre>
+                    </div>
+                    <div class="details">
+                        <ul class="primaryDetails">
+                            <li>
+                                <div class="title">Utilization</div>
+                                <div class="value">27%</div>
+                            </li>
+                            <li>
+                                <div class="title">Speed</div>
+                                <div class="value">5.00 GHz</div>
+                            </li>
+                            <li>
+                                <div class="title">Processes</div>
+                                <div class="value">5128</div>
+                            </li>
+                            <li>
+                                <div class="title">Threads</div>
+                                <div class="value">89917</div>
+                            </li>
+                            <li>
+                                <div class="title">Handles</div>
+                                <div class="value">647402</div>
+                            </li>
+                            <li>
+                                <div class="title">Up time</div>
+                                <div class="value">21:30:26:05</div>
+                            </li>
+                        </ul>
+                        <ul class="secondaryDetails">
+                            <li>
+                                <div class="title">Base speed</div>
+                                <div class="value">2.9 GHz</div>
+                            </li>
+                            <li>
+                                <div class="title">Sockets</div>
+                                <div class="value">2</div>
+                            </li>
+                            <li>
+                                <div class="title">Cores</div>
+                                <div class="value">64</div>
+                            </li>
+                            <li>
+                                <div class="title">Logical processors</div>
+                                <div class="value">128</div>
+                            </li>
+                            <li>
+                                <div class="title">Virtualization</div>
+                                <div class="value">Enabled</div>
+                            </li>
+                            <li>
+                                <div class="title">L1 cache</div>
+                                <div class="value">4 MB</div>
+                            </li>
+                            <li>
+                                <div class="title">L2 cache</div>
+                                <div class="value">32 MB</div>
+                            </li>
+                            <li>
+                                <div class="title">L3 cache</div>
+                                <div class="value">256 MB</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footerBar">
+            <div>Fewer <span class="keybind">d</span>etails</div>
+            <div class="separator"></div>
+            <div>Open Resource Monitor</div>
+        </div>
+    </div>
+    <video id="source" src="msc/bad_apple.webm" muted controls></video>
+    <canvas id="intermediate"></canvas>
 </body>
+
 </html>
