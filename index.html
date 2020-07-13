@@ -65,158 +65,13 @@
                         <div class="right">100%</div>
                     </div>
                     <div class="graphs">
-                        <div id="cores" style="--width: 6">
-                            <div class="cell">
-                                <div class="background"></div>
-                                <div class="percent">0%</div>
-                            </div>
-                            <div class="cell">
-                                <div class="background"></div>
-                                <div class="percent">0%</div>
-                            </div>
-                            <div class="cell">
-                                <div class="background"></div>
-                                <div class="percent">0%</div>
-                            </div>
-                            <div class="cell">
-                                <div class="background"></div>
-                                <div class="percent">0%</div>
-                            </div>
-                            <div class="cell">
-                                <div class="background"></div>
-                                <div class="percent">0%</div>
-                            </div>
-                            <div class="cell">
-                                <div class="background"></div>
-                                <div class="percent">0%</div>
-                            </div>
-                            <div class="cell">
-                                <div class="background"></div>
-                                <div class="percent">0%</div>
-                            </div>
-                            <div class="cell">
-                                <div class="background"></div>
-                                <div class="percent">0%</div>
-                            </div>
-                            <div class="cell">
-                                <div class="background"></div>
-                                <div class="percent">0%</div>
-                            </div>
-                            <div class="cell">
-                                <div class="background"></div>
-                                <div class="percent">0%</div>
-                            </div>
-                            <div class="cell">
-                                <div class="background"></div>
-                                <div class="percent">0%</div>
-                            </div>
-                            <div class="cell">
-                                <div class="background"></div>
-                                <div class="percent">0%</div>
-                            </div>
-                            <div class="cell">
-                                <div class="background"></div>
-                                <div class="percent">0%</div>
-                            </div>
-                            <div class="cell">
-                                <div class="background"></div>
-                                <div class="percent">0%</div>
-                            </div>
-                            <div class="cell">
-                                <div class="background"></div>
-                                <div class="percent">0%</div>
-                            </div>
-                            <div class="cell">
-                                <div class="background"></div>
-                                <div class="percent">0%</div>
-                            </div>
-                            <div class="cell">
-                                <div class="background"></div>
-                                <div class="percent">0%</div>
-                            </div>
-                            <div class="cell">
-                                <div class="background"></div>
-                                <div class="percent">0%</div>
-                            </div>
-                            <div class="cell">
-                                <div class="background"></div>
-                                <div class="percent">0%</div>
-                            </div>
-                            <div class="cell">
-                                <div class="background"></div>
-                                <div class="percent">0%</div>
-                            </div>
-                            <div class="cell">
-                                <div class="background"></div>
-                                <div class="percent">0%</div>
-                            </div>
-                            <div class="cell">
-                                <div class="background"></div>
-                                <div class="percent">0%</div>
-                            </div>
-                            <div class="cell">
-                                <div class="background"></div>
-                                <div class="percent">0%</div>
-                            </div>
-                            <div class="cell">
-                                <div class="background"></div>
-                                <div class="percent">0%</div>
-                            </div>
-                            <div class="cell">
-                                <div class="background"></div>
-                                <div class="percent">0%</div>
-                            </div>
-                            <div class="cell">
-                                <div class="background"></div>
-                                <div class="percent">0%</div>
-                            </div>
-                            <div class="cell">
-                                <div class="background"></div>
-                                <div class="percent">0%</div>
-                            </div>
-                            <div class="cell">
-                                <div class="background"></div>
-                                <div class="percent">0%</div>
-                            </div>
-                            <div class="cell">
-                                <div class="background"></div>
-                                <div class="percent">0%</div>
-                            </div>
-                            <div class="cell">
-                                <div class="background"></div>
-                                <div class="percent">0%</div>
-                            </div>
-                            <div class="cell">
-                                <div class="background"></div>
-                                <div class="percent">0%</div>
-                            </div>
-                            <div class="cell">
-                                <div class="background"></div>
-                                <div class="percent">0%</div>
-                            </div>
-                            <div class="cell">
-                                <div class="background"></div>
-                                <div class="percent">0%</div>
-                            </div>
-                            <div class="cell">
-                                <div class="background"></div>
-                                <div class="percent">0%</div>
-                            </div>
-                            <div class="cell">
-                                <div class="background"></div>
-                                <div class="percent">0%</div>
-                            </div>
-                            <div class="cell">
-                                <div class="background"></div>
-                                <div class="percent">0%</div>
-                            </div>
-                        </div>
+                        <div id="cores"></div>
                     </div>
                     <div class="details">
                         <div class="primaryDetails">
                             <div class="li">
                                 <div class="title">Utilization</div>
-                                <div class="value">27%</div>
+                                <div class="value" id="utilization">27%</div>
                             </div>
                             <div class="li">
                                 <div class="title">Speed</div>
@@ -264,11 +119,20 @@
         <div class="footerBar">
             <div>Fewer <span class="keybind">d</span>etails</div>
             <div class="separator"></div>
-            <div>Open Resource Monitor</div>
+            <a href="#" onclick="getId('intermediate').toggleAttribute('hidden')">Open Resource Monitor</a>
         </div>
     </div>
     <video id="source" src="msc/bad_apple.webm" muted controls></video>
-    <canvas id="intermediate"></canvas>
+    <div id="options">
+        <form id="form">
+            <label for="width">Width</label><input type="number" name="width" id="width" min="1" max="32">
+            <label for="numCores">Number of cores</label><input type="number" name="numCores" id="numCores" min="1" max="1024">
+            <label for="url">Video URL</label><input type="text" name="url" id="url">
+            <button type="submit">Submit</button>
+        </form>
+        <button id="render">Render</button>
+        <canvas id="intermediate" hidden></canvas>
+    </div>
 </body>
 
 </html>

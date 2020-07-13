@@ -1,85 +1,147 @@
-const width = 8
-const height = 8
+const width = 16
+const numCores = 128
+
+function getId(id: string): HTMLElement {
+	return document.getElementById(id)
+}
 
 window.addEventListener('load', () => {
-	let [source, intermediate, scale] = setup(width, height)
-	renderIntermediate(source, intermediate.getContext('2d'), scale, width, height)
-	source.addEventListener('play', () => {
-		renderIntermediate(source, intermediate.getContext('2d'), scale, width, height)
+	let renderer = new VideoRenderer(width, numCores)
+	
+	renderer.source.addEventListener('play', () => {
+		requestAnimationFrame(function frame() {
+			renderer.drawCores()
+			if (!renderer.source.paused && !renderer.source.ended) {
+				requestAnimationFrame(frame)
+			}
+		})
 	})
+	
+	let form = getId('form') as HTMLFormElement
+	
+	form['width'].value = String(renderer.width)
+	form['numCores'].value = String(renderer.numCores)
+	form['url'].value = String(renderer.source.src)
+	
+	form.addEventListener('submit', function(event) {
+		event.preventDefault()
+		renderer.setDimensions(this['width'].value, this['numCores'].value)
+		console.log(renderer.source.src)
+		console.log(this['url'].value)
+		if (renderer.source.src !== this['url'].value) {
+			renderer.source.src = this['url'].value
+		}
+		renderer.drawCores()
+	})
+	
+	let renderButton = getId('render') as HTMLButtonElement
+	renderButton.addEventListener('click', () => { renderer.drawCores() })
 })
 
-function setup(width: number, height: number): [HTMLVideoElement, HTMLCanvasElement, number] {
-	let canvas = document.getElementById('intermediate') as HTMLCanvasElement
-	let source = document.getElementById('source') as HTMLVideoElement
-	document.getElementById('cores').style.setProperty('--width', String(width))
-	
-	canvas.width = width
-	canvas.height = height
-	
-	let widthScale = width / source.videoWidth
-	let heightScale = height / source.videoHeight
-	let scale = Math.min(widthScale, heightScale)
-	
-	return [source, canvas, scale]
-}
+// A premade cell
+let defaultCell = document.createElement('div')
+defaultCell.classList.add('cell')
+let background = document.createElement('div')
+background.classList.add('background')
+let percent = document.createElement('div')
+percent.classList.add('percent')
+defaultCell.append(background, percent)
 
-function renderIntermediate(source: HTMLVideoElement, intermediate: CanvasRenderingContext2D, scale: number, width: number, height: number) {
-	intermediate.drawImage(source, 0, 0, source.videoWidth * scale, source.videoHeight * scale)
-	renderTaskManager(intermediate, width, height, document.getElementById('cores'))
-	if (!source.paused && !source.ended) {
-		window.requestAnimationFrame(() => renderIntermediate(source, intermediate, scale, width, height))
+class VideoRenderer {
+	width: number
+	numCores: number
+	height: number
+	source: HTMLVideoElement
+	canvas: HTMLCanvasElement
+	intermediate: CanvasRenderingContext2D
+	cores: HTMLElement
+	utilization: HTMLElement
+	
+	constructor(width: number, numCores: number) {
+		this.source = getId('source') as HTMLVideoElement
+		this.canvas = getId('intermediate') as HTMLCanvasElement
+		this.cores = getId('cores')
+		this.utilization = getId('utilization')
+		
+		this.setDimensions(width, numCores)
+		this.setupCells()
 	}
-}
-
-function renderTaskManager(
-	intermediate: CanvasRenderingContext2D, 
-	width: number, 
-	height: number, 
-	manager: HTMLElement
-) {
-	const pixels = grayscalePixels(intermediate, width, height)
-	manager.innerHTML = ''
-	manager.append(...pixels)
-}
-
-function grayscalePixels(ctx: CanvasRenderingContext2D, width: number, height: number): Node[] {
-	let img = ctx.getImageData(0, 0, width, height)
-	let coresElems = []
-	for (let row = 0; row < width; row++) {
-		for (let col = 0; col < height; col++) {
-			let percentElem = document.createElement('div')
-			percentElem.classList.add('percent')
-			let [r, g, b, a] = getPixel(img, row * width + col)
-			let grayscale = (r + g + b) * a / 3 / 255
-			// let piece = String((255 - grayscale) / 255 * 100).split('.', 1)[0].padStart(3, ' ')
-			// display += piece + ' '
-			// display += `${r} ${g} ${b} ${a} ${grayscale}, `
-			percentElem.innerText = `${Math.round((255 - grayscale) / 255 * 100)}%`
-			
-			let bgElem = document.createElement('div')
-			bgElem.style.setProperty('opacity', percentElem.innerText)
-			bgElem.classList.add('background')
-			
-			let cellElem = document.createElement('div')
-			cellElem.classList.add('cell')
-			cellElem.appendChild(bgElem)
-			cellElem.appendChild(percentElem)
-			
-			coresElems.push(cellElem)
+	
+	setWidth(width: number) {
+		this.setDimensions(width, this.numCores)
+	}
+	
+	setCores(numCores: number) {
+		this.setDimensions(this.width, numCores)
+	}
+	
+	setDimensions(width: number, numCores: number) {
+		this.width = width
+		this.numCores = numCores
+		this.height = Math.ceil(numCores / width)
+		this.canvas.width = width
+		this.canvas.height = this.height
+		
+		this.intermediate = this.canvas.getContext('2d', {
+			alpha: false,
+			desynchronized: true,
+		})
+		this.setupCells()
+	}
+	
+	setupCells() {
+		this.cores.style.setProperty('--width', String(this.width))
+		while (this.cores.childNodes.length > this.numCores) {
+			this.cores.removeChild(this.cores.lastChild)
 		}
-		// display += '\n'
-		// display += '\n'
+		while (this.cores.childNodes.length < this.numCores) {
+			this.cores.appendChild(
+				this.createCell(0)
+			)
+		}
 	}
-	return coresElems
-}
-
-function getPixel(img: ImageData, index: number): [number, number, number, number] {
-	let adjusted = index * 4
-	return [
-		img.data[adjusted],
-		img.data[adjusted + 1],
-		img.data[adjusted + 2],
-		img.data[adjusted + 3]
-	]
+	
+	createCell(percent: number): Node {
+		let newCell = defaultCell.cloneNode(true)
+		this.updateCell(newCell, percent)
+		return newCell
+	}
+	
+	updateCell(cell: Node, percent: number) {
+		let percentString = `${Math.round(percent)}%`
+		let [bgDiv, percentDiv] = cell.childNodes as NodeListOf<HTMLDivElement>
+		bgDiv.style.opacity = percentString
+		percentDiv.textContent = percentString
+	}
+	
+	drawToIntermediate() {
+		this.intermediate.drawImage(
+			this.source, 
+			0, 
+			0, 
+			this.width, 
+			this.height
+		)
+	}
+	
+	drawCores() {
+		this.drawToIntermediate()
+		
+		let data = this.intermediate.getImageData(0, 0, this.width, this.height).data
+		let i = 0
+		let sum = 0
+		for (const cell of this.cores.childNodes) {
+			if (i > data.length) {
+				break
+			}
+			let grey = (data[i] + data[i + 1] + data[i + 2]) / 3
+			let percent = 100 - grey / 255 * 100
+			this.updateCell(cell, percent)
+			sum += percent
+			i += 4
+		}
+		sum /= this.cores.childNodes.length
+		// Sadly, this tanks performance
+		// this.utilization.textContent = `${Math.round(sum)}%`
+	}
 }

@@ -13,6 +13,8 @@
 	--window-accent: #4c4a48;
 	--window-hover: #5e5c5b;
 	--close-hover: #e81123;
+	--window-hyperlink: #0066cc;
+	--window-hyperlink-hover: #3399ff;
 	
 	--divider: #d9d9d9;
 	--divider-light: #f2f2f2;
@@ -31,7 +33,8 @@
 	--active-border: #99d1ff;
 	--tab-hover: #d8eaf9;
 	
-	--scale: calc(1 / 1.15);
+	--desktop-scale: 1.15;
+	--scale: calc(1 / var(--desktop-scale));
 }
 
 body {
@@ -41,13 +44,52 @@ body {
 	color: rgb(226, 226, 226);
 	font-size: calc(14px * var(--scale));
 	display: flex;
+	flex-direction: column;
 	flex-wrap: wrap;
 	align-items: start;
+	align-content: start;
 	padding: 10px;
 	gap: 10px;
 }
 * {
 	box-sizing: border-box;
+}
+
+a {
+	color: var(--window-hyperlink);
+	text-decoration: none;
+}
+
+a:hover {
+	color: var(--window-hyperlink-hover);
+	text-decoration: underline;
+}
+
+a:visited {
+	color: var(--window-hyperlink);
+}
+
+#options {
+	display: flex;
+	flex-direction: column;
+	flex-wrap: wrap;
+	align-items: start;
+	gap: 20px;
+}
+
+#form {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+	break-after: always;
+}
+
+#intermediate {
+	min-width: 80px;
+	min-height: 60px;
+	image-rendering: -webkit-optimize-contrast;
+	image-rendering: crisp-edges;
+	image-rendering: pixelated;
 }
 
 .window {
@@ -56,13 +98,15 @@ body {
 	display: grid;
 	grid-template: "title" "menu" "content" 1fr "footer";
 	height: calc(880px * var(--scale));
-	width: calc(950px * var(--scale));
+	width: calc(1110px * var(--scale));
 	border: calc(1px * var(--scale)) solid var(--window-border);
 	
 	user-select: none;
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
+	
+	break-after: always;
 }
 
 .window > div, .window > div > div,
@@ -240,7 +284,7 @@ body {
 
 #cores .percent {
 	position: absolute;
-	width: calc(40px * var(--scale));
+	width: calc(36px * var(--scale));
 }
 
 #cores .background {
@@ -303,9 +347,18 @@ body {
 
 .footerBar {
 	grid-area: footer;
+	justify-content: start;
+	align-items: center;
+	gap: calc(8px * var(--scale));
+	margin: calc(15px * var(--scale)) calc(8px * var(--scale));
 }
 .window .footerBar > div {
 	display: block;
+}
+.footerBar .separator {
+	width: calc(1px * var(--scale));
+	height: 70%;
+	background: var(--divider);
 }
 
 .icon {

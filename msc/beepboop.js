@@ -1,69 +1,111 @@
-const width = 8;
-const height = 8;
+const width = 16;
+const numCores = 128;
+function getId(id) {
+    return document.getElementById(id);
+}
 window.addEventListener('load', () => {
-    let [source, intermediate, scale] = setup(width, height);
-    renderIntermediate(source, intermediate.getContext('2d'), scale, width, height);
-    source.addEventListener('play', () => {
-        renderIntermediate(source, intermediate.getContext('2d'), scale, width, height);
+    let renderer = new VideoRenderer(width, numCores);
+    renderer.source.addEventListener('play', () => {
+        requestAnimationFrame(function frame() {
+            renderer.drawCores();
+            if (!renderer.source.paused && !renderer.source.ended) {
+                requestAnimationFrame(frame);
+            }
+        });
     });
-});
-function setup(width, height) {
-    let canvas = document.getElementById('intermediate');
-    let source = document.getElementById('source');
-    document.getElementById('cores').style.setProperty('--width', String(width));
-    canvas.width = width;
-    canvas.height = height;
-    let widthScale = width / source.videoWidth;
-    let heightScale = height / source.videoHeight;
-    let scale = Math.min(widthScale, heightScale);
-    return [source, canvas, scale];
-}
-function renderIntermediate(source, intermediate, scale, width, height) {
-    intermediate.drawImage(source, 0, 0, source.videoWidth * scale, source.videoHeight * scale);
-    renderTaskManager(intermediate, width, height, document.getElementById('cores'));
-    if (!source.paused && !source.ended) {
-        window.requestAnimationFrame(() => renderIntermediate(source, intermediate, scale, width, height));
-    }
-}
-function renderTaskManager(intermediate, width, height, manager) {
-    const pixels = grayscalePixels(intermediate, width, height);
-    manager.innerHTML = '';
-    manager.append(...pixels);
-}
-function grayscalePixels(ctx, width, height) {
-    let img = ctx.getImageData(0, 0, width, height);
-    let coresElems = [];
-    for (let row = 0; row < width; row++) {
-        for (let col = 0; col < height; col++) {
-            let percentElem = document.createElement('div');
-            percentElem.classList.add('percent');
-            let [r, g, b, a] = getPixel(img, row * width + col);
-            let grayscale = (r + g + b) * a / 3 / 255;
-            // let piece = String((255 - grayscale) / 255 * 100).split('.', 1)[0].padStart(3, ' ')
-            // display += piece + ' '
-            // display += `${r} ${g} ${b} ${a} ${grayscale}, `
-            percentElem.innerText = `${Math.round((255 - grayscale) / 255 * 100)}%`;
-            let bgElem = document.createElement('div');
-            bgElem.style.setProperty('opacity', percentElem.innerText);
-            bgElem.classList.add('background');
-            let cellElem = document.createElement('div');
-            cellElem.classList.add('cell');
-            cellElem.appendChild(bgElem);
-            cellElem.appendChild(percentElem);
-            coresElems.push(cellElem);
+    let form = getId('form');
+    form['width'].value = String(renderer.width);
+    form['numCores'].value = String(renderer.numCores);
+    form['url'].value = String(renderer.source.src);
+    form.addEventListener('submit', function (event) {
+        event.preventDefault();
+        renderer.setDimensions(this['width'].value, this['numCores'].value);
+        console.log(renderer.source.src);
+        console.log(this['url'].value);
+        if (renderer.source.src !== this['url'].value) {
+            renderer.source.src = this['url'].value;
         }
-        // display += '\n'
-        // display += '\n'
+        renderer.drawCores();
+    });
+    let renderButton = getId('render');
+    renderButton.addEventListener('click', () => { renderer.drawCores(); });
+});
+// A premade cell
+let defaultCell = document.createElement('div');
+defaultCell.classList.add('cell');
+let background = document.createElement('div');
+background.classList.add('background');
+let percent = document.createElement('div');
+percent.classList.add('percent');
+defaultCell.append(background, percent);
+class VideoRenderer {
+    constructor(width, numCores) {
+        this.source = getId('source');
+        this.canvas = getId('intermediate');
+        this.cores = getId('cores');
+        this.utilization = getId('utilization');
+        this.setDimensions(width, numCores);
+        this.setupCells();
     }
-    return coresElems;
-}
-function getPixel(img, index) {
-    let adjusted = index * 4;
-    return [
-        img.data[adjusted],
-        img.data[adjusted + 1],
-        img.data[adjusted + 2],
-        img.data[adjusted + 3]
-    ];
+    setWidth(width) {
+        this.setDimensions(width, this.numCores);
+    }
+    setCores(numCores) {
+        this.setDimensions(this.width, numCores);
+    }
+    setDimensions(width, numCores) {
+        this.width = width;
+        this.numCores = numCores;
+        this.height = Math.ceil(numCores / width);
+        this.canvas.width = width;
+        this.canvas.height = this.height;
+        this.intermediate = this.canvas.getContext('2d', {
+            alpha: false,
+            desynchronized: true,
+        });
+        this.setupCells();
+    }
+    setupCells() {
+        this.cores.style.setProperty('--width', String(this.width));
+        while (this.cores.childNodes.length > this.numCores) {
+            this.cores.removeChild(this.cores.lastChild);
+        }
+        while (this.cores.childNodes.length < this.numCores) {
+            this.cores.appendChild(this.createCell(0));
+        }
+    }
+    createCell(percent) {
+        let newCell = defaultCell.cloneNode(true);
+        this.updateCell(newCell, percent);
+        return newCell;
+    }
+    updateCell(cell, percent) {
+        let percentString = `${Math.round(percent)}%`;
+        let [bgDiv, percentDiv] = cell.childNodes;
+        bgDiv.style.opacity = percentString;
+        percentDiv.textContent = percentString;
+    }
+    drawToIntermediate() {
+        this.intermediate.drawImage(this.source, 0, 0, this.width, this.height);
+    }
+    drawCores() {
+        this.drawToIntermediate();
+        let data = this.intermediate.getImageData(0, 0, this.width, this.height).data;
+        let i = 0;
+        let sum = 0;
+        for (const cell of this.cores.childNodes) {
+            if (i > data.length) {
+                break;
+            }
+            let grey = (data[i] + data[i + 1] + data[i + 2]) / 3;
+            let percent = 100 - grey / 255 * 100;
+            this.updateCell(cell, percent);
+            sum += percent;
+            i += 4;
+        }
+        sum /= this.cores.childNodes.length;
+        // Sadly, this tanks performance
+        // this.utilization.textContent = `${Math.round(sum)}%`
+    }
 }
 //# sourceMappingURL=beepboop.js.map
