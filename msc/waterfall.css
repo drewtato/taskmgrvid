@@ -1,5 +1,6 @@
 :root {
 	--cpu-accent: #117dbb;
+	--cpu-accent-medium: #42a9e4;
 	--cpu-accent-light: #d9eaf4;
 	--cpu-accent-extralight: #f1f6fa;
 	
@@ -243,7 +244,7 @@ body {
 }
 
 #cores .background {
-	background: var(--cpu-accent);
+	background: var(--cpu-accent-medium);
 	width: 100%;
 	height: 100%;
 }
