@@ -6,6 +6,7 @@
 	--window-background: #fff;
 	--window-background-secondary: #f0f0f0;
 	--window-text: #000;
+	--window-text-light: #707070;
 	--window-border-inactive: #4b4251;
 	--window-border: #5c5a58;
 	--window-accent: #4c4a48;
@@ -38,6 +39,11 @@ body {
 	font-family: 'Segoe UI', 'Roboto', sans-serif;
 	color: rgb(226, 226, 226);
 	font-size: calc(14px * var(--scale));
+	display: flex;
+	flex-wrap: wrap;
+	align-items: start;
+	padding: 10px;
+	gap: 10px;
 }
 * {
 	box-sizing: border-box;
@@ -46,11 +52,10 @@ body {
 .window {
 	background: var(--window-background);
 	color: var(--window-text);
-	margin: 10px;
 	display: grid;
 	grid-template: "title" "menu" "content" 1fr "footer";
 	height: calc(880px * var(--scale));
-	width: calc(900px * var(--scale));
+	width: calc(950px * var(--scale));
 	border: calc(1px * var(--scale)) solid var(--window-border);
 	
 	user-select: none;
@@ -59,13 +64,18 @@ body {
 	-ms-user-select: none;
 }
 
-.window div {
+.window > div, .window > div > div,
+.windowControls > div,
+.mainContent > div,
+.monitorContent > div,
+.secondaryDetails {
 	display: grid;
 	grid-auto-flow: column;
 }
 .window .monitorContent, 
 .window .tabContainer, 
-.window .sideTabContainer {
+.window .sideTabContainer,
+.window .primaryDetails > .li {
 	grid-auto-flow: row;
 }
 
@@ -140,6 +150,7 @@ body {
 	border-bottom: calc(1px * var(--scale)) solid var(--divider);
 	justify-content: start;
 	padding: calc(2px * var(--scale)) calc(2px * var(--scale)) 0;
+	margin-bottom: calc(5px * var(--scale));
 }
 .tabBar > div {
 	padding: calc(2px * var(--scale)) calc(5px * var(--scale));
@@ -158,14 +169,141 @@ body {
 	background: var(--tab-hover);
 }
 
+.mainContent {
+	grid-template-columns: calc(var(--side-width) * var(--scale)) auto 1fr;
+	margin: calc(2px * var(--scale));
+	line-height: 1;
+}
+
+.mainContent > .separator {
+	width: calc(1px * var(--scale));
+	background: var(--divider);
+	margin: calc(17px * var(--scale)) calc(3px * var(--scale)) calc(5px * var(--scale));
+}
+
 .monitorContent {
 	grid-template-rows: auto auto 1fr auto;
+	margin:
+		calc(16px * var(--scale))
+		calc(28px * var(--scale))
+		calc(30px * var(--scale))
+		calc(25px * var(--scale));
+}
+
+.titleArea {
+	align-items: end;
+}
+
+.titleArea .title {
+	font-size: calc(32px * var(--scale));
+}
+
+.titleArea .name {
+	font-size: calc(18px * var(--scale));
+}
+
+.left {
+	justify-self: start;
+}
+
+.right {
+	justify-self: end;
+}
+
+.subtitleArea {
+	margin: calc(13px * var(--scale)) calc(2px * var(--scale)) 0;
+	color: var(--window-text-light);
+	font-size: calc(12px * var(--scale));
+}
+
+/* Graphs */
+#cores {
+	--cell-size: calc(100% / var(--width));
+	display: flex;
+	flex: 1 0 var(--cell-size);
+	flex-wrap: wrap;
+	text-align: end;
+	border: calc(1px * var(--scale)) solid var(--cpu-accent);
+	margin: calc(5px * var(--scale)) 0 calc(38px * var(--scale));
+}
+
+#cores .cell {
+	width: var(--cell-size);
+	border: calc(1px * var(--scale)) solid var(--divider);
+	border-left: none;
+	border-top: none;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+#cores .percent {
+	position: absolute;
+	width: calc(40px * var(--scale));
+}
+
+#cores .background {
+	background: var(--cpu-accent);
+	width: 100%;
+	height: 100%;
+}
+
+.details {
+	justify-content: start;
+}
+
+.value {
+	font-feature-settings: "tnum";
+}
+
+.details .title {
+	color: var(--window-text-light);
+}
+
+.window .primaryDetails {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	width: calc(233px * var(--scale));
+	gap: 0 calc(17px * var(--scale));
+	align-content: start;
+}
+
+.primaryDetails > .li {
+	align-content: start;
+}
+
+.primaryDetails .title {
+	margin-bottom: calc(8px * var(--scale));
+}
+
+.primaryDetails .value {
+	font-size: calc(22px * var(--scale));
+	margin-bottom: calc(14px * var(--scale));
+}
+
+.secondaryDetails {
+	line-height: 1.57;
+	column-gap: calc(15px * var(--scale));
+	margin-left: calc(5px * var(--scale));
+}
+
+/* Keep the ::after acting like text */
+.secondaryDetails > .title {
+	display: block;
+	grid-column: 1;
+}
+.secondaryDetails > .title::after {
+	content: ":";
+}
+.secondaryDetails > .value {
+	grid-column: 2;
 }
 
 .footerBar {
 	grid-area: footer;
 }
-.footerBar > div {
+.window .footerBar > div {
 	display: block;
 }
 

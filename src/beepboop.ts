@@ -1,8 +1,9 @@
-const width = 6
-const height = 6
+const width = 8
+const height = 8
 
 window.addEventListener('load', () => {
 	let [source, intermediate, scale] = setup(width, height)
+	renderIntermediate(source, intermediate.getContext('2d'), scale, width, height)
 	source.addEventListener('play', () => {
 		renderIntermediate(source, intermediate.getContext('2d'), scale, width, height)
 	})
@@ -11,6 +12,8 @@ window.addEventListener('load', () => {
 function setup(width: number, height: number): [HTMLVideoElement, HTMLCanvasElement, number] {
 	let canvas = document.getElementById('intermediate') as HTMLCanvasElement
 	let source = document.getElementById('source') as HTMLVideoElement
+	document.getElementById('cores').style.setProperty('--width', String(width))
+	
 	canvas.width = width
 	canvas.height = height
 	
@@ -35,24 +38,40 @@ function renderTaskManager(
 	height: number, 
 	manager: HTMLElement
 ) {
-	manager.innerText = grayscalePixels(intermediate, width, height)
+	const pixels = grayscalePixels(intermediate, width, height)
+	manager.innerHTML = ''
+	manager.append(...pixels)
 }
 
-function grayscalePixels(ctx: CanvasRenderingContext2D, width: number, height: number): string {
+function grayscalePixels(ctx: CanvasRenderingContext2D, width: number, height: number): Node[] {
 	let img = ctx.getImageData(0, 0, width, height)
-	let display = ''
+	let coresElems = []
 	for (let row = 0; row < width; row++) {
 		for (let col = 0; col < height; col++) {
+			let percentElem = document.createElement('div')
+			percentElem.classList.add('percent')
 			let [r, g, b, a] = getPixel(img, row * width + col)
 			let grayscale = (r + g + b) * a / 3 / 255
-			let piece = String((255 - grayscale) / 255 * 100).split('.', 1)[0].padStart(3, ' ')
-			display += piece + ' '
+			// let piece = String((255 - grayscale) / 255 * 100).split('.', 1)[0].padStart(3, ' ')
+			// display += piece + ' '
 			// display += `${r} ${g} ${b} ${a} ${grayscale}, `
+			percentElem.innerText = `${Math.round((255 - grayscale) / 255 * 100)}%`
+			
+			let bgElem = document.createElement('div')
+			bgElem.style.setProperty('opacity', percentElem.innerText)
+			bgElem.classList.add('background')
+			
+			let cellElem = document.createElement('div')
+			cellElem.classList.add('cell')
+			cellElem.appendChild(bgElem)
+			cellElem.appendChild(percentElem)
+			
+			coresElems.push(cellElem)
 		}
-		display += '\n'
-		display += '\n'
+		// display += '\n'
+		// display += '\n'
 	}
-	return display
+	return coresElems
 }
 
 function getPixel(img: ImageData, index: number): [number, number, number, number] {
