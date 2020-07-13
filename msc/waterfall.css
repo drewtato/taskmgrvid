@@ -50,6 +50,7 @@ body {
 	align-content: start;
 	padding: 10px;
 	gap: 10px;
+	min-height: 100%;
 }
 * {
 	box-sizing: border-box;
@@ -97,8 +98,8 @@ a:visited {
 	color: var(--window-text);
 	display: grid;
 	grid-template: "title" "menu" "content" 1fr "footer";
-	height: calc(880px * var(--scale));
-	width: calc(1110px * var(--scale));
+	height: calc(100vh - 20px);
+	width: 60%;
 	border: calc(1px * var(--scale)) solid var(--window-border);
 	
 	user-select: none;
