@@ -141,7 +141,6 @@ class VideoRenderer {
 			i += 4
 		}
 		sum /= this.cores.childNodes.length
-		// Sadly, this tanks performance
-		// this.utilization.textContent = `${Math.round(sum)}%`
+		this.utilization.textContent = `${Math.round(sum)}%`
 	}
 }

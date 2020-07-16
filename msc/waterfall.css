@@ -284,6 +284,8 @@ a:visited {
 }
 
 #cores .percent {
+	/* It is necessary to have the percentages not cause a layout update,
+	   which absolute positioning does fix. This also applies to `#utilization`. */
 	position: absolute;
 	width: calc(36px * var(--scale));
 }
@@ -326,6 +328,11 @@ a:visited {
 .primaryDetails .value {
 	font-size: calc(22px * var(--scale));
 	margin-bottom: calc(14px * var(--scale));
+}
+
+/* Fix the update killing performance */
+#utilization {
+	position: absolute;
 }
 
 .secondaryDetails {
