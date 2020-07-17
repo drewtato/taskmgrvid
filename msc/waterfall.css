@@ -13,11 +13,13 @@
 	--window-accent: #4c4a48;
 	--window-hover: #5e5c5b;
 	--close-hover: #e81123;
-	--window-hyperlink: #0066cc;
-	--window-hyperlink-hover: #3399ff;
 	
+	--divider-dark: #cfcfcf;
 	--divider: #d9d9d9;
 	--divider-light: #f2f2f2;
+	
+	--expand: #999999;
+	--expand-hover: #000;
 	
 	--hover: #e5f3ff;
 	--hover-border: #cce8ff;
@@ -33,41 +35,105 @@
 	--active-border: #99d1ff;
 	--tab-hover: #d8eaf9;
 	
-	--desktop-scale: 1.15;
-	--scale: calc(1 / var(--desktop-scale));
+	--hyperlink: rgb(169, 169, 255);
+	--hyperlink-hover: rgb(118, 118, 255);
 }
 
 body {
 	margin: 0;
 	background: #412f4d;
 	font-family: 'Segoe UI', 'Roboto', sans-serif;
+	font-size: 16px;
 	color: rgb(226, 226, 226);
-	font-size: calc(14px * var(--scale));
-	display: flex;
-	flex-direction: column;
-	flex-wrap: wrap;
-	align-items: start;
-	align-content: start;
-	padding: 10px;
-	gap: 10px;
 	min-height: 100%;
 }
 * {
 	box-sizing: border-box;
 }
 
+.container {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-items: start;
+	align-content: start;
+	justify-content: center;
+	padding: 0.8em 0.8em 2em;
+	min-width: min-content;
+}
+
+.container > * {
+	margin: 0 0.8rem 0.8rem 0;
+}
+
+.fullscreen .container > * {
+	margin: 0;
+}
+
+.notTaskManager {
+	max-width: 36rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.notTaskManager > * {
+	margin-bottom: 0.8em;
+}
+
+.renderContainer {
+	display: flex;
+	align-items: center;
+}
+
+.renderContainer > * {
+	margin: 0 1em;
+}
+
 a {
-	color: var(--window-hyperlink);
+	color: var(--hyperlink);
 	text-decoration: none;
 }
 
+a:visited {
+	color: var(--hyperlink);
+}
+
 a:hover {
-	color: var(--window-hyperlink-hover);
+	color: var(--hyperlink-hover);
 	text-decoration: underline;
 }
 
-a:visited {
-	color: var(--window-hyperlink);
+button {
+	padding: 0.4em 1em;
+	font-weight: 600;
+	border-radius: 5px;
+	margin: 4px;
+}
+
+input {
+	padding: 0.4em;
+	margin: 0 0.2em;
+	border-radius: 5px;
+	width: 100%;
+}
+
+.inputContainer > input {
+	width: unset;
+}
+
+/* If you have the Video Speed Controller extension, so it doesn't
+   mess up the flex container */
+.vsc-controller {
+	margin: 0;
+}
+
+#source {
+	max-height: 25rem;
+}
+
+#description {
+	max-width: 30rem;
 }
 
 #options {
@@ -79,10 +145,28 @@ a:visited {
 }
 
 #form {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	width: 30rem;
+	gap: 1em 1.5em;
+	break-after: always;
+}
+
+#form h1 {
+	font-size: 1.5em;
+	margin: 0 0 0.3em;
+}
+
+#form > .section {
 	display: flex;
 	flex-direction: column;
 	gap: 5px;
-	break-after: always;
+	align-items: start;
+}
+
+#form > button[type='submit'] {
+	grid-column: span 2;
+	margin: auto;
 }
 
 #intermediate {
@@ -93,13 +177,23 @@ a:visited {
 	image-rendering: pixelated;
 }
 
+#ctrlShiftEsc {
+	position: absolute;
+	z-index: 2;
+}
+
 .window {
+	--scale: calc(var(--scale-raw) / 1.15);
+	--hyperlink: #0066cc;
+	--hyperlink-hover: #3399ff;
+	font-size: calc(14px * var(--scale));
 	background: var(--window-background);
 	color: var(--window-text);
 	display: grid;
 	grid-template: "title" "menu" "content" 1fr "footer";
-	height: calc(100vh - 20px);
-	width: 60%;
+	height: calc(var(--window-height) * var(--scale));
+	width: calc(var(--window-width) * var(--scale));
+	min-width: calc(var(--window-width) * var(--scale));
 	border: calc(1px * var(--scale)) solid var(--window-border);
 	
 	user-select: none;
@@ -107,7 +201,32 @@ a:visited {
 	-moz-user-select: none;
 	-ms-user-select: none;
 	
-	break-after: always;
+	white-space: nowrap;
+}
+
+.fullscreen > .container {
+	padding: 0;
+	overflow: hidden;
+}
+
+.fullscreen .window {
+	border: none;
+	width: 100vw;
+	height: 100vh;
+}
+
+.fullscreen > .container > :not(.window):not(#ctrlShiftEsc) {
+	display: none !important;
+}
+
+.maximize > .restore {
+	display: none;
+}
+.fullscreen .maximize > .restore {
+	display: unset;
+}
+.fullscreen .maximize > .max {
+	display: none;
 }
 
 .window > div, .window > div > div,
@@ -132,6 +251,9 @@ a:visited {
 	height: calc(34px * var(--scale));
 	color: #fff;
 }
+.fullscreen .titleBar {
+	height: calc(26px * var(--scale));
+}
 .inactive .titleBar {
 	background: none;
 	color: var(--window-text);
@@ -139,6 +261,9 @@ a:visited {
 .titleContents {
 	padding: calc(7px * var(--scale)) calc(9px * var(--scale));
 	grid-template-columns: auto 1fr;
+}
+.fullscreen .titleContents {
+	padding: calc(3px * var(--scale)) calc(2px * var(--scale));
 }
 .titleContents > div {
 	padding-left: calc(5px * var(--scale));
@@ -152,6 +277,12 @@ a:visited {
 	width: calc(50px * var(--scale));
 	align-content: center;
 	justify-items: center;
+	background: var(--background, var(--window-accent));
+	transition: 200ms background;
+}
+.fullscreen .windowControls > div {
+	height: calc(24px * var(--scale));
+	width: calc(51px * var(--scale));
 }
 .windowControls > div > svg {
 	height: calc(12px * var(--scale));
@@ -159,13 +290,39 @@ a:visited {
 	stroke: currentColor;
 	stroke-width: calc(1px * var(--scale));
 	fill: transparent;
-	transition: 200ms background;
 }
 .windowControls > div:hover {
-	background: var(--window-hover);
+	--background: var(--window-hover);
 }
-.windowControls > div:last-child:hover {
-	background: var(--close-hover);
+
+.windowControls > div.close {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.close:before, .close:after {
+	content: '';
+	width: calc(1px * var(--scale));
+	height: calc(14px * var(--scale));
+	position: absolute;
+	background: currentColor;
+}
+
+.close:before {
+	transform: translate(-0.5px) rotate(45deg);
+}
+
+.close:after {
+	transform: translate(-0.5px) rotate(-45deg);
+}
+
+.windowControls > div.close:hover {
+	--background: var(--close-hover);
+}
+.fullscreen .windowControls > div.close {
+	padding-right: calc(6px * var(--scale));
+	padding-left: calc(2px * var(--scale));
 }
 
 .menuBar {
@@ -216,9 +373,13 @@ a:visited {
 }
 
 .mainContent {
-	grid-template-columns: calc(var(--side-width) * var(--scale)) auto 1fr;
+	grid-template-columns: auto auto 1fr;
 	margin: calc(2px * var(--scale));
 	line-height: 1;
+}
+
+.sideTabContainer {
+	width: calc(var(--sidebar-width) * var(--scale));
 }
 
 .mainContent > .separator {
@@ -313,12 +474,12 @@ a:visited {
 	flex-direction: row;
 	flex-wrap: wrap;
 	width: calc(233px * var(--scale));
-	gap: 0 calc(17px * var(--scale));
 	align-content: start;
 }
 
 .primaryDetails > .li {
 	align-content: start;
+	margin-right: calc(17px * var(--scale));
 }
 
 .primaryDetails .title {
@@ -331,8 +492,16 @@ a:visited {
 }
 
 /* Fix the update killing performance */
-#utilization {
+.updating {
 	position: absolute;
+}
+
+#uptime {
+	display: flex;
+}
+
+#uptime > div:not(:last-child)::after {
+	content: ':';
 }
 
 .secondaryDetails {
@@ -341,11 +510,6 @@ a:visited {
 	margin-left: calc(5px * var(--scale));
 }
 
-/* Keep the ::after acting like text */
-.secondaryDetails > .title {
-	display: block;
-	grid-column: 1;
-}
 .secondaryDetails > .title::after {
 	content: ":";
 }
@@ -357,16 +521,39 @@ a:visited {
 	grid-area: footer;
 	justify-content: start;
 	align-items: center;
-	gap: calc(8px * var(--scale));
-	margin: calc(15px * var(--scale)) calc(8px * var(--scale));
+	gap: calc(9px * var(--scale));
+	margin: calc(17px * var(--scale)) 0;
 }
-.window .footerBar > div {
-	display: block;
+.footerBar > * {
+	display: grid;
+	align-items: center;
+	grid-auto-flow: column;
 }
+.footerBar .icon.details {
+	color: var(--expand);
+	height: calc(22px * var(--scale));
+	width: calc(22px * var(--scale));
+	margin: 0 calc(8px * var(--scale));
+	border-radius: 50%;
+	border: calc(1px * var(--scale)) solid currentColor;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: calc(18px * var(--scale));
+}
+.footerBar div:hover > .details {
+	color: var(--expand-hover);
+}
+
 .footerBar .separator {
 	width: calc(1px * var(--scale));
 	height: 70%;
-	background: var(--divider);
+	background: var(--divider-dark);
+}
+.footerBar .icon {
+	height: calc(16px * var(--scale));
+	width: calc(16px * var(--scale));
+	margin: 0 calc(6px * var(--scale)) 0 0;
 }
 
 .icon {

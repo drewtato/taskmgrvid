@@ -2,141 +2,179 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task Manager Video</title>
-    <link rel="stylesheet" href="msc/waterfall.css">
-    <script src="msc/beepboop.js"></script>
-    <meta property="og:title" content="Task Manager Video">
-    <meta property="og:type" content="website">
-    <meta property="og:image" content="https://andrewirino.com/taskmgrvid/msc/feature.png">
-    <meta property="og:description" content="A site for rendering videos into Windows Task Manager cores">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Task Manager Video</title>
+	<link rel="stylesheet" href="msc/waterfall.css">
+	<script src="msc/beepboop.js"></script>
+	<meta property="og:title" content="Task Manager Video">
+	<meta property="og:type" content="website">
+	<meta property="og:image" content="https://andrewirino.com/taskmgrvid/msc/feature.png">
+	<meta property="og:description" content="A site for rendering videos into Windows Task Manager cores">
 </head>
 
 <body>
-    <div class="window" id="taskManager">
-        <div class="titleBar">
-            <div class="titleContents">
-                <img src="msc/taskmgr_icon_32bit.ico" alt="task manager icon" class="icon">
-                <div>Task Manager</div>
-            </div>
-            <div class="windowControls">
-                <div class="minimize">
-                    <svg xmlns="http://www.w3.org/2000/svg">
-                        <line x1="0" y1="5.6" x2="8.5" y2="5.6" />
-                    </svg>
-                </div>
-                <div class="maximize">
-                    <svg xmlns="http://www.w3.org/2000/svg">
-                        <rect x="0.4" y="1.3" width="7.8" height="7.8" />
-                    </svg>
-                </div>
-                <div class="close">
-                    <svg xmlns="http://www.w3.org/2000/svg">
-                        <line x1="1" y1="1" x2="9.5" y2="9.5" />
-                        <line x1="1" y1="9.5" x2="9.5" y2="1" />
-                    </svg>
-                </div>
-            </div>
-        </div>
-        <div class="menuBar">
-            <div><span class="keybind">F</span>ile</div>
-            <div><span class="keybind">O</span>ptions</div>
-            <div><span class="keybind">V</span>iew</div>
-        </div>
-        <div class="tabContainer">
-            <div class="tabBar">
-                <div>Processes</div>
-                <div class="active">Performance</div>
-                <div>App history</div>
-                <div>Startup</div>
-                <div>Users</div>
-                <div>Details</div>
-                <div>Services</div>
-            </div>
-            <div class="mainContent" style="--side-width: 250px">
-                <div class="sideTabContainer">
-                    <!-- Todo -->
-                </div>
-                <div class="separator"></div>
-                <div class="monitorContent">
-                    <div class="titleArea">
-                        <div class="title left">CPU</div>
-                        <div class="name right">AMD Ryzen Threadripper 3990X 64-Core Processor</div>
-                    </div>
-                    <div class="subtitleArea">
-                        <div class="left">% Utilization over 4 minutes</div>
-                        <div class="right">100%</div>
-                    </div>
-                    <div class="graphs">
-                        <div id="cores"></div>
-                    </div>
-                    <div class="details">
-                        <div class="primaryDetails">
-                            <div class="li">
-                                <div class="title">Utilization</div>
-                                <div class="value" id="utilization">27%</div>
-                            </div>
-                            <div class="li">
-                                <div class="title">Speed</div>
-                                <div class="value">5.00 GHz</div>
-                            </div>
-                            <div class="li">
-                                <div class="title">Processes</div>
-                                <div class="value">5128</div>
-                            </div>
-                            <div class="li">
-                                <div class="title">Threads</div>
-                                <div class="value">89917</div>
-                            </div>
-                            <div class="li">
-                                <div class="title">Handles</div>
-                                <div class="value">647402</div>
-                            </div>
-                            <div class="li">
-                                <div class="title">Up time</div>
-                                <div class="value">21:30:26:05</div>
-                            </div>
-                        </div>
-                        <div class="secondaryDetails">
-                            <div class="title">Base speed</div>
-                            <div class="value">2.90 GHz</div>
-                            <div class="title">Sockets</div>
-                            <div class="value">2</div>
-                            <div class="title">Cores</div>
-                            <div class="value">64</div>
-                            <div class="title">Logical processors</div>
-                            <div class="value">128</div>
-                            <div class="title">Virtualization</div>
-                            <div class="value">Enabled</div>
-                            <div class="title">L1 cache</div>
-                            <div class="value">4 MB</div>
-                            <div class="title">L2 cache</div>
-                            <div class="value">32 MB</div>
-                            <div class="title">L3 cache</div>
-                            <div class="value">256 MB</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="footerBar">
-            <div>Fewer <span class="keybind">d</span>etails</div>
-            <div class="separator"></div>
-            <a href="#" onclick="getId('intermediate').toggleAttribute('hidden')">Open Resource Monitor</a>
-        </div>
-    </div>
-    <video id="source" src="msc/bad_apple.webm" muted controls></video>
-    <div id="options">
-        <form id="form">
-            <label for="width">Width</label><input type="number" name="width" id="width" min="1" max="32">
-            <label for="numCores">Number of cores</label><input type="number" name="numCores" id="numCores" min="1" max="1024">
-            <label for="url">Video URL</label><input type="text" name="url" id="url">
-            <button type="submit">Submit</button>
-        </form>
-        <button id="render">Render</button>
-        <canvas id="intermediate" hidden></canvas>
-    </div>
+	<div class="container">
+		<button hidden id="ctrlShiftEsc">Ctrl+Shift+Esc</button>
+		<div class="window" id="taskManager" style="--window-width: 1000px; --window-height: 850px; --sidebar-width: 10px; --scale-raw: 1">
+			<div class="titleBar">
+				<div class="titleContents">
+					<img src="msc/taskmgr_icon_32bit.ico" alt="task manager icon" class="icon">
+					<div>Task Manager</div>
+				</div>
+				<div class="windowControls">
+					<div class="minimize">
+						<svg xmlns="http://www.w3.org/2000/svg">
+							<rect x="calc(0.5px * var(--scale))" y="calc(6.5px * var(--scale))" width="calc(9px * var(--scale))" height="calc(0.0001px * var(--scale))" />
+						</svg>
+					</div>
+					<div class="maximize" id="maxWindow">
+						<svg class="restore" xmlns="http://www.w3.org/2000/svg">
+							<rect x="calc(2.5px * var(--scale))" y="calc(1.5px * var(--scale))" width="calc(7px * var(--scale))" height="calc(7px * var(--scale))" />
+							<rect x="calc(0.5px * var(--scale))" y="calc(3.5px * var(--scale))" width="calc(7px * var(--scale))" height="calc(7px * var(--scale))" fill="var(--background, var(--window-accent))"/>
+						</svg>
+						<svg class="max" xmlns="http://www.w3.org/2000/svg">
+							<rect x="calc(0.5px * var(--scale))" y="calc(1.5px * var(--scale))" width="calc(9px * var(--scale))" height="calc(9px * var(--scale))" />
+						</svg>
+					</div>
+					<div class="close" id="closeWindow">
+					</div>
+				</div>
+			</div>
+			<div class="menuBar">
+				<div><span class="keybind">F</span>ile</div>
+				<div><span class="keybind">O</span>ptions</div>
+				<div><span class="keybind">V</span>iew</div>
+			</div>
+			<div class="tabContainer">
+				<div class="tabBar">
+					<div>Processes</div>
+					<div class="active">Performance</div>
+					<div>App history</div>
+					<div>Startup</div>
+					<div>Users</div>
+					<div>Details</div>
+					<div>Services</div>
+				</div>
+				<div class="mainContent">
+					<div class="sideTabContainer">
+						<!-- Todo -->
+					</div>
+					<div class="separator"></div>
+					<div class="monitorContent">
+						<div class="titleArea">
+							<div class="title left">CPU</div>
+							<div class="name right">AMD Ryzen Threadripper 3990X 64-Core Processor</div>
+						</div>
+						<div class="subtitleArea">
+							<div class="left">% Utilization over 4 minutes</div>
+							<div class="right">100%</div>
+						</div>
+						<div class="graphs">
+							<div id="cores"></div>
+						</div>
+						<div class="details">
+							<div class="primaryDetails">
+								<div class="li">
+									<div class="title">Utilization</div>
+									<div class="value updating" id="utilization">27%</div>
+								</div>
+								<div class="li">
+									<div class="title">Speed</div>
+									<div class="value">5.00 GHz</div>
+								</div>
+								<div class="li">
+									<div class="title">Processes</div>
+									<div class="value">5128</div>
+								</div>
+								<div class="li">
+									<div class="title">Threads</div>
+									<div class="value">89917</div>
+								</div>
+								<div class="li">
+									<div class="title">Handles</div>
+									<div class="value">647402</div>
+								</div>
+								<div class="li">
+									<div class="title">Up time</div>
+									<!-- Note that these are in reverse order -->
+									<div class="value updating" id="uptime">
+										<div>30</div>
+										<div>23</div>
+										<div>59</div>
+										<div>59</div>
+									</div>
+								</div>
+							</div>
+							<div class="secondaryDetails">
+								<div class="title">Base speed</div>
+								<div class="value">2.90 GHz</div>
+								<div class="title">Sockets</div>
+								<div class="value">2</div>
+								<div class="title">Cores</div>
+								<div class="value">64</div>
+								<div class="title">Logical processors</div>
+								<div class="value">128</div>
+								<div class="title">Virtualization</div>
+								<div class="value">Enabled</div>
+								<div class="title">L1 cache</div>
+								<div class="value">4 MB</div>
+								<div class="title">L2 cache</div>
+								<div class="value">32 MB</div>
+								<div class="title">L3 cache</div>
+								<div class="value">256 MB</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="footerBar">
+				<div>
+					<div class="icon details">^</div>
+					<div>
+						Fewer <span class="keybind">d</span>etails
+					</div>
+				</div>
+				<div class="separator"></div>
+				<a href="#" onclick="getId('intermediate').toggleAttribute('hidden')"><img src="msc/perfmon_32bit.ico" alt="resource monitor icon" class="icon">Open Resource Monitor</a>
+			</div>
+		</div>
+		<div class="notTaskManager">
+			<video id="source" src="msc/bad_apple.webm" muted controls></video>
+			<div id="description">
+				Play the video to see usage in task manager. You can change options below. Works best in Firefox on Desktop or Chrome on Android. <a href="//github.com/drewtato/taskmgrvid">Source.</a>
+			</div>
+			<div class="renderContainer">
+				<button id="render">Render</button>
+				<canvas id="intermediate" hidden></canvas>
+			</div>
+			<div id="options">
+				<form id="form">
+					<div class="section">
+						<h1>Info options</h1>
+						<label for="width">Width</label><input type="number" name="width" id="width" min="1" value="16">
+						<label for="numCores">Number of cores</label><input type="number" name="numCores" id="numCores" min="1" value="128">
+						<label for="url">Video URL</label><input type="text" name="url" id="url">
+						<label for="bootTime">Boot time (unix timestamp in seconds)</label><input type="number" name="bootTime" id="bootTime">
+					</div>
+					<div class="section">
+						<h1>Window options</h1>
+						<label for="winWidth">Window width</label><div class="inputContainer">
+							<input type="number" name="winWidth" value="1000">px
+						</div>
+						<label for="winHeight">Window height</label><div class="inputContainer">
+							<input type="number" name="winHeight" value="850">px
+						</div>
+						<label for="sidebarWidth">Sidebar width</label><div class="inputContainer">
+							<input type="number" name="sidebarWidth" value="50">px
+						</div>
+						<label for="winScale">Scale</label><input type="text" name="winScale" value="1">
+					</div>
+					<button type="submit">Submit</button>
+				</form>
+			</div>
+		</div>
+	</div>
 </body>
 
 </html>

@@ -1,10 +1,9 @@
-const width = 16;
-const numCores = 128;
 function getId(id) {
     return document.getElementById(id);
 }
 window.addEventListener('load', () => {
-    let renderer = new VideoRenderer(width, numCores);
+    let form = getId('form');
+    let renderer = new VideoRenderer(form.width.value, form.numCores.value, form.bootTime.value.length > 0 ? Number(form.bootTime.value) * 1000 : Date.now());
     renderer.source.addEventListener('play', () => {
         requestAnimationFrame(function frame() {
             renderer.drawCores();
@@ -13,23 +12,54 @@ window.addEventListener('load', () => {
             }
         });
     });
-    let form = getId('form');
-    form['width'].value = String(renderer.width);
-    form['numCores'].value = String(renderer.numCores);
-    form['url'].value = String(renderer.source.src);
+    form.url.value = String(renderer.source.src);
     form.addEventListener('submit', function (event) {
         event.preventDefault();
-        renderer.setDimensions(this['width'].value, this['numCores'].value);
+        renderer.setDimensions(this.width.value, this.numCores.value);
         console.log(renderer.source.src);
-        console.log(this['url'].value);
-        if (renderer.source.src !== this['url'].value) {
-            renderer.source.src = this['url'].value;
+        console.log(this.url.value);
+        if (renderer.source.src !== this.url.value) {
+            renderer.source.src = this.url.value;
         }
+        renderer.setBootTime(this.bootTime.value);
         renderer.drawCores();
+    });
+    let taskManager = getId('taskManager');
+    for (const [elem, prop, ext] of [
+        ['winWidth', '--window-width', 'px'],
+        ['winHeight', '--window-height', 'px'],
+        ['sidebarWidth', '--sidebar-width', 'px'],
+        ['winScale', '--scale-raw', '']
+    ]) {
+        let inputElem = form[elem];
+        taskManager.style.setProperty(prop, inputElem.value + ext);
+        inputElem.addEventListener('input', function () {
+            taskManager.style.setProperty(prop, this.value + ext);
+        });
+    }
+    getId('closeWindow').addEventListener('click', function () {
+        getId('taskManager').style.opacity = '0';
+        getId('ctrlShiftEsc').hidden = false;
+    });
+    getId('ctrlShiftEsc').addEventListener('click', function () {
+        this.hidden = true;
+        getId('taskManager').style.removeProperty('opacity');
+    });
+    getId('maxWindow').addEventListener('click', () => {
+        toggleFullscreen();
     });
     let renderButton = getId('render');
     renderButton.addEventListener('click', () => { renderer.drawCores(); });
 });
+function toggleFullscreen() {
+    document.body.classList.toggle('fullscreen');
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+    }
+    else {
+        document.exitFullscreen();
+    }
+}
 // A premade cell
 let defaultCell = document.createElement('div');
 defaultCell.classList.add('cell');
@@ -39,13 +69,19 @@ let percent = document.createElement('div');
 percent.classList.add('percent');
 defaultCell.append(background, percent);
 class VideoRenderer {
-    constructor(width, numCores) {
+    constructor(width, numCores, bootTime) {
         this.source = getId('source');
         this.canvas = getId('intermediate');
         this.cores = getId('cores');
         this.utilization = getId('utilization');
+        this.uptime = getId('uptime');
+        this.bootTime = bootTime;
         this.setDimensions(width, numCores);
         this.setupCells();
+        this.updateUptime();
+    }
+    setBootTime(time) {
+        this.bootTime = time * 1000;
     }
     setWidth(width) {
         this.setDimensions(width, this.numCores);
@@ -105,6 +141,26 @@ class VideoRenderer {
         }
         sum /= this.cores.childNodes.length;
         this.utilization.textContent = `${Math.round(sum)}%`;
+        this.updateUptime();
+    }
+    updateUptime() {
+        let elapsed = Math.floor((Date.now() - this.bootTime) / 1000);
+        // Only update if time is different
+        if (this.lastTime === elapsed) {
+            return;
+        }
+        this.lastTime = elapsed;
+        // Seconds
+        this.uptime.children[3].textContent = String(elapsed % 60).padStart(2, '0');
+        elapsed = Math.floor(elapsed / 60);
+        // Minutes
+        this.uptime.children[2].textContent = String(elapsed % 60).padStart(2, '0');
+        elapsed = Math.floor(elapsed / 60);
+        // Hours
+        this.uptime.children[1].textContent = String(elapsed % 24).padStart(2, '0');
+        elapsed = Math.floor(elapsed / 24);
+        // Days
+        this.uptime.children[0].textContent = String(elapsed);
     }
 }
 //# sourceMappingURL=beepboop.js.map
